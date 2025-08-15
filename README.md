@@ -15,7 +15,7 @@ Ini adalah project dashboard manajemen produk yang dibuat sebagai bagian dari Te
 
 * **Node.js**: v22.18.0
 * **Package Manager**: `npm`
-* **Backend API**: Port:8001`
+* **Backend API**: `Port:8001`
 
 ### b. Langkah-langkah Instalasi
 1.  **Clone Repository**
