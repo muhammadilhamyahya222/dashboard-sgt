@@ -13,26 +13,27 @@ const { Search } = Input;
 function ProductsPageContent() {
     const { notification } = App.useApp();
 
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [products, setProducts] = useState<Product[]>([]); // Menyimpan array data produk untuk tabel.
+    const [loading, setLoading] = useState(true); // Melacak status pemanggilan API. Awalnya true agar spinner muncul saat pertama kali halaman dimuat.
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 10,
         total: 0,
-    });
+    }); // Menyimpan info halaman saat ini, ukuran halaman, dan total item.
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false); // Mengontrol apakah modal (untuk create/edit) sedang ditampilkan atau tidak.
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null); // Menyimpan data produk yang sedang diedit. Jika null, berarti modal dalam mode "create". Jika berisi objek produk, berarti mode "edit".
     const [form] = Form.useForm();
 
-    const fetchProducts = useCallback(
+    // Mengambil data produk dari API Proxy (/api/products).
+    const fetchProducts = useCallback( // Mencegah fungsi ini dibuat ulang di setiap render.
         async (page: number, pageSize: number, searchTerm: string = "") => {
             try {
-                setLoading(true);
+                setLoading(true); // Menampilkan spinner sebelum panggilan API dimulai.
                 const params = { page, limit: pageSize, search: searchTerm };
-                const response = await axios.get("/api/products", { params });
+                const response = await axios.get("/api/products", { params }); // Melakukan panggilan API dengan parameter page, limit, dan search
                 const { data, pagination: paginationData } = response.data;
-                setProducts(data);
+                setProducts(data); // Memperbarui state dengan data baru yang diterima dari API.
                 if (paginationData) {
                     setPagination((prev) => ({
                         ...prev,
@@ -46,18 +47,18 @@ function ProductsPageContent() {
                 notification.error({
                     message: "Gagal Memuat Data",
                     description: "Tidak dapat mengambil daftar produk dari server.",
-                });
+                }); // Blok ini akan berjalan jika panggilan API gagal, menampilkan notifikasi error kepada pengguna.
             } finally {
-                setLoading(false);
+                setLoading(false); // Blok ini akan selalu berjalan di akhir (baik sukses maupun gagal) untuk menyembunyikan spinner.
             }
         },
         [notification]
     );
 
-    const debouncedSearch = useMemo(
+    const debouncedSearch = useMemo( // Memastikan fungsi debounce ini tidak dibuat ulang kecuali dependensinya (fetchProducts atau pageSize) berubah.
         () =>
             debounce((searchTerm: string) => {
-                fetchProducts(1, pagination.pageSize, searchTerm);
+                fetchProducts(1, pagination.pageSize, searchTerm); // Fungsi ini hanya akan dieksekusi 300ms setelah pengguna berhenti mengetik. Ia akan selalu mencari dari halaman 1.
             }, 300),
         [fetchProducts, pagination.pageSize]
     );
@@ -71,7 +72,7 @@ function ProductsPageContent() {
     }, []);
 
     const handleTableChange = (newPagination: TablePaginationConfig) => {
-        fetchProducts(newPagination.current!, newPagination.pageSize!);
+        fetchProducts(newPagination.current!, newPagination.pageSize!); // Dipanggil saat pengguna mengganti halaman di pagination.
     };
 
     const showCreateModal = () => {

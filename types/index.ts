@@ -1,3 +1,4 @@
+// Properti Product
 export interface Product {
     product_id: string;
     product_title: string;
@@ -9,6 +10,7 @@ export interface Product {
     updated_timestamp: string;
 }
 
+// Parameter yang bisa digunakan saat mengambil daftar produk
 export interface ProductListParams {
     page: number;
     limit: number;
